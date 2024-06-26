@@ -8,8 +8,8 @@ from deltalake import DeltaTable, write_deltalake
 import typer
 import ray
 
-from utils import any2date
-from tq_utils import get_tq_api, _get_cont_tick_of_range
+from .utils import any2date
+from .tq_utils import get_tq_api, _get_cont_tick_of_range
 
     
 DATA_HOME = os.getenv('DATA_HOME', '~/ingestor_data')
