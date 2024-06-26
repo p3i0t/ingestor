@@ -54,7 +54,7 @@ def _get_cont_tick_of_range(symbol: str, start: datetime.date, end: datetime.dat
     with closing(api):
         while not all([v.is_finished() for v in tasks.values()]):
             api.wait_update()
-            # time.sleep(5)
+            time.sleep(5)
             print("progress: ", { k:("%.2f%%" % v.get_progress()) for k,v in tasks.items() })
             
         #     df = api.get_tick_data_series(
