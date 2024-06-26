@@ -3,6 +3,7 @@ import os
 import click
 import datetime
 from pathlib import Path
+from typing import Optional
 
 from deltalake import DeltaTable, write_deltalake
 import typer
@@ -29,6 +30,13 @@ class Mode(str, Enum):
 class IfExists(str, Enum):
     skip = 'skip'
     overwrite = 'overwrite'
+    
+class Exchange(str, Enum):
+    SHFE = 'SHFE'
+    DCE = 'DCE'
+    CZCE = 'CZCE'
+    CFFEX = 'CFFEX'
+    
 
 app = typer.Typer()
 
@@ -81,7 +89,8 @@ def download_cont_tick(
 
 @app.command()
 def download_cont_tick_csv(
-    symbol: str = 'all',
+    symbol: Optional[str] = None,
+    exchange: Exchange = typer.Option(Exchange.SHFE, help='exchange of the symbol'),
     start: datetime.date = typer.Option("2020-01-01", parser=any2date),
     end: datetime.date = typer.Option("today", parser=any2date),
     data_path: Path = typer.Option('/Users/wangxin/SynologyDrive/DataLake', exists=False),
@@ -89,9 +98,10 @@ def download_cont_tick_csv(
     # mode: Mode = typer.Option(Mode.create, help='create or append mode'),
     # if_exists: IfExists = typer.Option(IfExists.skip, help='skip or overwrite if exists'),
 ):
-    if symbol == 'all':
+    if symbol is None:
+        # if symbol == 'all':
         with get_tq_api() as api:
-            symbols = api.query_quotes(ins_class='CONT')
+            symbols = api.query_quotes(ins_class='CONT', exchange_id=exchange)
     else:
         symbols = [symbol]
 
