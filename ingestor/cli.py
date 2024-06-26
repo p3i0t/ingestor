@@ -85,6 +85,7 @@ def download_cont_tick_csv(
     start: datetime.date = typer.Option("2020-01-01", parser=any2date),
     end: datetime.date = typer.Option("today", parser=any2date),
     data_path: Path = typer.Option('/Users/wangxin/SynologyDrive/DataLake', exists=False),
+    n_parallel: int = typer.Option(5, help='number of parallel tasks'),
     # mode: Mode = typer.Option(Mode.create, help='create or append mode'),
     # if_exists: IfExists = typer.Option(IfExists.skip, help='skip or overwrite if exists'),
 ):
@@ -115,8 +116,8 @@ def download_cont_tick_csv(
         #     # table.write(df.to_arrow(), mode='append')
         #     ...
             
-    ray.init(num_cpus=1, num_gpus=0, ignore_reinit_error=True)
-    MAX_QUEUE_SIZE = 1
+    ray.init(num_cpus=n_parallel, num_gpus=0, ignore_reinit_error=True)
+    MAX_QUEUE_SIZE = n_parallel
     task_ids = []
     queue_results = []
     for _symbol in symbols:
