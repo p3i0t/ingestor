@@ -17,7 +17,7 @@ def get_tq_api():
         api.close()
 
 
-def _get_cont_tick_of_range(symbol: str, start: datetime.date, end: datetime.date, dir: str) -> pl.DataFrame:
+def _get_cont_tick_of_range(symbol: str, start: datetime.date, end: datetime.date, dir: str):
     #    with get_tq_api() as api:
     api = TqApi(auth=TqAuth('13691845749', '60Pacmer')) 
     df = api.get_trading_calendar(start_dt=start, end_dt=end)
@@ -45,7 +45,11 @@ def _get_cont_tick_of_range(symbol: str, start: datetime.date, end: datetime.dat
     for cont_symbol, dates in cont_dates_dict.items():
         start = min(dates)
         end = max(dates)
-        os.makedirs(dir, exist_ok=True)
+        try:
+            os.makedirs(dir, exist_ok=False)
+        except OSError:
+            print(f"Directory {dir} already exists, task done before.")
+            return
         tasks[cont_symbol] = DataDownloader(
             api, symbol_list=cont_symbol, dur_sec=0, 
             start_dt=start, end_dt=end, 
