@@ -41,15 +41,15 @@ def _get_cont_tick_of_range(symbol: str, start: datetime.date, end: datetime.dat
 
     # 根据实际主力合约代码和日期分组下载tick数据（这样得到的才是5档行情，如果有的话）
     # cont_df_list = []
+    if os.path.exists(dir):
+        print(f"Directory {dir} already exists, task done before.")
+        return
     tasks = {}
     for cont_symbol, dates in cont_dates_dict.items():
         start = min(dates)
         end = max(dates)
-        try:
-            os.makedirs(dir, exist_ok=False)
-        except OSError:
-            print(f"Directory {dir} already exists, task done before.")
-            return
+        os.makedirs(dir, exist_ok=True)
+
         tasks[cont_symbol] = DataDownloader(
             api, symbol_list=cont_symbol, dur_sec=0, 
             start_dt=start, end_dt=end, 
